@@ -1,27 +1,26 @@
-const fs = require('fs');
-interface Result {
-  results: {
-    id: number;
-    name: string;
-    job: string;
-  }[];
-}
+import fs from 'fs';
+
+import { ResultSchema } from './schemas/ResultSchema';
+import type { Result } from './interfaces/Result';
 
 const printJobs = (results: Result) => {
-  results?.results?.forEach(({ job }) => {
-    console.log(job);
-  });
+  const validataionResult = ResultSchema.validate(results);
+  if (!validataionResult.error) {
+    console.log(results.results.map(({ job }) => `${job}`).join('\n'));
+  } else {
+    console.error(validataionResult.error.toString());
+  }
 };
 
 // printJobs({
 //   results: [
 //     {
 //       id: 1,
-//       name: 'John',
-//       job: 'developer',
+//       name: "Jack",
+//       job: "Programmer",
 //     },
 //   ],
 // });
 
-const data: Result = JSON.parse(fs.readFileSync('data.json', 'utf-8'));
+const data: Result = JSON.parse(fs.readFileSync('./data.json').toString());
 printJobs(data);

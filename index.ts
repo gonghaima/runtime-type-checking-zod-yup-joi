@@ -1,16 +1,27 @@
 const fs = require('fs');
-interface Result {
-  results: {
-    id: number;
-    name: string;
-    job: string;
-  }[];
-}
+import { z } from 'zod';
+
+const ResultSchema = z.object({
+  results: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      job: z.string(),
+    })
+  ),
+});
+
+// extract the inferred type
+type Result = z.infer<typeof ResultSchema>;
 
 const printJobs = (results: Result) => {
-  results.results.forEach(({ job }) => {
-    console.log(job);
-  });
+  if (ResultSchema.safeParse(results).success) {
+    results?.results?.forEach(({ job }) => {
+      console.log(job);
+    });
+  } else {
+    console.log('Bad data');
+  }
 };
 
 // printJobs({
